@@ -18,8 +18,8 @@ services:
     depends_on:
       - mongo-db
     volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
+      - .:/app
+      - /app/node_modules
 
 volumes:
   mongo_data:
