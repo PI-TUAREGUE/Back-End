@@ -9,5 +9,6 @@ const employeeService = new EmployeeService();
 const employeeController = new EmployeeController(employeeService);
 
 employeeRouter.post('/', employeeController.create);
+employeeRouter.get('/:id', employeeController.findById);
 
 export default employeeRouter;

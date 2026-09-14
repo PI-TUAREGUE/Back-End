@@ -12,4 +12,17 @@ export class EmployeeController {
       next(error);
     }
   };
+
+  findById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+
+      const foundEmployee = await this.employeeService.findById(String(id));
+
+      return res.status(200).json(foundEmployee);
+
+    } catch(error)  {
+      next(error);
+    }
+  }
 }
