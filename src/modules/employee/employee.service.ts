@@ -6,6 +6,7 @@ import { EmployeeRole } from './roles.enum';
 import { EmployeeStatus } from './status.enum';
 
 import { AppError } from '../../shared/errors/AppError';
+import { IEmployeeFilters } from './employee.filters';
 
 export type EmployeeDTO = Omit<IEmployee, '_id' | 'createdAt' | 'updatedAt'>;
 
@@ -40,8 +41,22 @@ export class EmployeeService {
     return employee;
   }
 
-  async findAll(): Promise<EmployeeDTO[]> {
-    return await EmployeeModel.find().exec();
+  async findAll(filters: IEmployeeFilters): Promise<EmployeeDTO[]> {
+    const query: Record<string, any> = {};
+
+    if (filters.status) {
+      query.status = filters.status;
+    }
+
+    if (filters.role) {
+      query.role = filters.role;
+    }
+
+    if (filters.name) {
+      query.name = { $regex: filters.name, $options: 'i' };
+    }
+
+    return await EmployeeModel.find(query).exec();
   }
 
   async addRole(id: string, role: EmployeeRole): Promise<IEmployee | null> {

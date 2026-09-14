@@ -12,4 +12,57 @@ export class EmployeeController {
       next(error);
     }
   };
+
+  findById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+
+      const employee = await this.employeeService.findById(String(id));
+      return res.status(200).json(employee);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  findAll = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { status, role, name } = req.query;
+
+      const employee = await this.employeeService.findAll({
+        status: status as any,
+        role: role as any,
+        name: name as string,
+      });
+      return res.status(200).json(employee);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  addRole = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const { role } = req.body;
+
+      const employee = await this.employeeService.addRole(String(id), role);
+      return res.status(200).json(employee);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updateStatus = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      const employee = await this.employeeService.updateStatus(
+        String(id),
+        status,
+      );
+      return res.status(200).json(employee);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
