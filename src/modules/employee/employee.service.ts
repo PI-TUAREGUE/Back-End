@@ -71,7 +71,30 @@ export class EmployeeService {
       },
     ).exec();
 
+    if (!updatedEmployee) {
+      throw new AppError('Usuário não encontrado.', 404);
+    }
+
     return updatedEmployee;
+  }
+
+  async removeRole(id: string, role: EmployeeRole): Promise<IEmployee | null> {
+    const employee = await EmployeeModel.findByIdAndUpdate(
+      id,
+      {
+        $pull: { roles: role },
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    ).exec();
+
+    if (!employee) {
+      throw new AppError('Usuário não encontrado.', 404);
+    }
+
+    return employee;
   }
 
   async updateStatus(
@@ -86,6 +109,10 @@ export class EmployeeService {
         runValidators: true,
       },
     ).exec();
+
+    if (!updatedEmployee) {
+      throw new AppError('Usuário não encontrado.', 404);
+    }
 
     return updatedEmployee;
   }

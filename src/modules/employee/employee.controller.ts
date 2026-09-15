@@ -51,6 +51,18 @@ export class EmployeeController {
     }
   };
 
+  removeRole = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const { roles } = req.body;
+
+      const employee = await this.employeeService.removeRole(String(id), roles);
+      return res.status(200).json(employee);
+    } catch (error) {
+      next(error);
+    }
+  };
+
   updateStatus = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;

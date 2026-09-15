@@ -10,8 +10,9 @@ const employeeController = new EmployeeController(employeeService);
 
 employeeRouter.post('/', employeeController.create);
 employeeRouter.get('/', employeeController.findAll);
+employeeRouter.patch('/:id/roles', employeeController.addRole);
+employeeRouter.delete('/:id/roles', employeeController.removeRole);
+employeeRouter.patch('/:id/status', employeeController.updateStatus);
 employeeRouter.get('/:id', employeeController.findById);
-employeeRouter.patch('/roles/:id', employeeController.addRole);
-employeeRouter.patch('/status/:id', employeeController.updateStatus);
 
 export default employeeRouter;
