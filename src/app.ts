@@ -8,6 +8,7 @@ import { errorHandler } from './shared/middlewares/error.middleware';
 
 //Routes
 import employeeRouter from './modules/employee/employee.routes';
+import authRouter from './modules/auth/auth.routes';
 
 //Init express app
 const app = express();
@@ -18,6 +19,7 @@ app.use(express.json());
 //Import routes
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 app.use('/employees', employeeRouter);
+app.use('/auth', authRouter);
 
 app.use(errorHandler);
 
