@@ -11,16 +11,17 @@ export class AuthService {
     const employee = await EmployeeModel.findOne({ email: email });
 
     if (!employee) {
-      new AppError('Email ou senha incorretos', 401);
+      throw new AppError('Email ou senha incorretos', 401);
     }
 
     const matchPassword = await bcrypt.compare(password, employee!.password);
     if (!matchPassword) {
-      new AppError('Email ou senha incorretos', 401);
+      throw new AppError('Email ou senha incorretos', 401);
     }
 
     const payload = {
       id: employee!._id,
+      name: employee!.name,
       email: employee!.email,
       roles: employee!.roles,
     };
@@ -34,7 +35,7 @@ export class AuthService {
       );
     }
 
-    const token = await jwt.sign(payload, secret, {
+    const token = jwt.sign(payload, secret, {
       expiresIn: '1h',
     });
 
