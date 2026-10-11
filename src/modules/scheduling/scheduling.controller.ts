@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { SchedulerService } from './scheduler.service';
+import { SchedulingService } from './scheduling.service';
 
-export class SchedulerController {
-  constructor(private schedulerService: SchedulerService) {}
+export class SchedulingController {
+  constructor(private schedulingService: SchedulingService) {}
 
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -17,7 +17,7 @@ export class SchedulerController {
         status,
       } = req.body;
 
-      const scheduler = await this.schedulerService.create({
+      const scheduling = await this.schedulingService.create({
         client,
         plate,
         car,
@@ -27,7 +27,7 @@ export class SchedulerController {
         service,
         status,
       });
-      return res.status(201).json(scheduler);
+      return res.status(201).json(scheduling);
     } catch (error) {
       next(error);
     }
@@ -37,8 +37,8 @@ export class SchedulerController {
     try {
       const { id } = req.params;
 
-      const scheduler = await this.schedulerService.findById(String(id));
-      return res.status(200).json(scheduler);
+      const scheduling = await this.schedulingService.findById(String(id));
+      return res.status(200).json(scheduling);
     } catch (error) {
       next(error);
     }
@@ -57,11 +57,11 @@ export class SchedulerController {
         employee,
       } = req.query;
 
-      const scheduler = await this.schedulerService.findAll({
+      const scheduling = await this.schedulingService.findAll({
         status: status as any,
         client: client as string,
       });
-      return res.status(200).json(scheduler);
+      return res.status(200).json(scheduling);
     } catch (error) {
       next(error);
     }
@@ -71,11 +71,11 @@ export class SchedulerController {
     try {
       const { id } = req.params;
       const { status } = req.body;
-      const scheduler = await this.schedulerService.updateStatus(
+      const scheduling = await this.schedulingService.updateStatus(
         String(id),
         status,
       );
-      return res.status(200).json(scheduler);
+      return res.status(200).json(scheduling);
     } catch (error) {
       next(error);
     }
