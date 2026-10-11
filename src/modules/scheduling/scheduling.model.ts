@@ -1,8 +1,8 @@
 import { model, Schema, Document, Types } from 'mongoose';
 
-import { SchedulerStatus } from './scheduler.enum';
+import { SchedulingStatus } from './scheduling.enum';
 
-export interface IScheduler extends Document {
+export interface IScheduling extends Document {
   client: string;
   plate: string;
   car: string;
@@ -10,10 +10,10 @@ export interface IScheduler extends Document {
   endDate?: Date;
   employee: Types.ObjectId[];
   service: Types.ObjectId[];
-  status: SchedulerStatus;
+  status: SchedulingStatus;
 }
 
-const schedulerSchema = new Schema<IScheduler>(
+const schedulingSchema = new Schema<IScheduling>(
   {
     client: { type: String, required: true },
     plate: {
@@ -58,8 +58,8 @@ const schedulerSchema = new Schema<IScheduler>(
     },
     status: {
       type: String,
-      enum: Object.values(SchedulerStatus),
-      default: SchedulerStatus.SCHEDULED,
+      enum: Object.values(SchedulingStatus),
+      default: SchedulingStatus.SCHEDULED,
       required: true,
     },
   },
@@ -68,4 +68,7 @@ const schedulerSchema = new Schema<IScheduler>(
   },
 );
 
-export const SchedulerModel = model<IScheduler>('Scheduler', schedulerSchema);
+export const SchedulingModel = model<IScheduling>(
+  'Scheduling',
+  schedulingSchema,
+);

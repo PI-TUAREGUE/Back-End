@@ -1,13 +1,13 @@
 import { Types } from 'mongoose';
-import { SchedulerModel, IScheduler } from './scheduler.model';
-import { SchedulerStatus } from './scheduler.enum';
+import { SchedulingModel, IScheduling } from './scheduling.model';
+import { SchedulingStatus } from './scheduling.enum';
 import { AppError } from '../../shared/errors/AppError';
-import { ISchedulerFilters } from './scheduler.filters';
+import { ISchedulingFilters } from './scheduling.filters';
 import { EmployeeModel } from '../employee/employee.model';
 import { EmployeeStatus } from '../employee/status.enum';
 import { ServiceModel } from '../service/service.model';
 
-export interface SchedulerDTO {
+export interface SchedulingDTO {
   client: string;
   plate: string;
   car: string;
@@ -15,11 +15,11 @@ export interface SchedulerDTO {
   endDate?: Date;
   employee: (string | Types.ObjectId)[];
   service: (string | Types.ObjectId)[];
-  status: SchedulerStatus;
+  status: SchedulingStatus;
 }
 
-export class SchedulerService {
-  async create(data: SchedulerDTO): Promise<IScheduler> {
+export class SchedulingService {
+  async create(data: SchedulingDTO): Promise<IScheduling> {
     const startDate = new Date();
 
     if (data.endDate && new Date(data.endDate) <= startDate) {
@@ -62,7 +62,7 @@ export class SchedulerService {
       );
     }
 
-    return await SchedulerModel.create({
+    return await SchedulingModel.create({
       ...data,
       startDate,
       employee: employeeIds,
@@ -70,19 +70,19 @@ export class SchedulerService {
     });
   }
 
-  async findById(id: string): Promise<IScheduler | null> {
-    const scheduler = await SchedulerModel.findById(id)
+  async findById(id: string): Promise<IScheduling | null> {
+    const scheduling = await SchedulingModel.findById(id)
       .populate('employee', 'name')
       .populate('service', 'name');
 
-    if (!scheduler) {
+    if (!scheduling) {
       throw new AppError('Agendamento não encontrado', 404);
     }
 
-    return scheduler;
+    return scheduling;
   }
 
-  async findAll(filters: ISchedulerFilters): Promise<SchedulerDTO[]> {
+  async findAll(filters: ISchedulingFilters): Promise<SchedulingDTO[]> {
     const query: Record<string, any> = {};
 
     if (filters.status) {
@@ -101,16 +101,16 @@ export class SchedulerService {
       query.plate = { $regex: filters.plate.toUpperCase(), $options: 'i' };
     }
 
-    return await SchedulerModel.find(query)
+    return await SchedulingModel.find(query)
       .populate('employee', 'name')
       .populate('service', 'name');
   }
 
   async updateStatus(
     id: string,
-    status: SchedulerStatus,
-  ): Promise<IScheduler | null> {
-    const updateScheduler = await SchedulerModel.findByIdAndUpdate(
+    status: SchedulingStatus,
+  ): Promise<IScheduling | null> {
+    const updateScheduling = await SchedulingModel.findByIdAndUpdate(
       id,
       { $set: { status: status } },
       {
@@ -119,10 +119,10 @@ export class SchedulerService {
       },
     ).exec();
 
-    if (!updateScheduler) {
+    if (!updateScheduling) {
       throw new AppError('Agendamento não encontrado', 404);
     }
 
-    return updateScheduler;
+    return updateScheduling;
   }
 }
