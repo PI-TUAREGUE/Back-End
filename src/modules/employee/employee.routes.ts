@@ -10,16 +10,35 @@ const employeeRouter = Router();
 const employeeService = new EmployeeService();
 const employeeController = new EmployeeController(employeeService);
 
-employeeRouter.post('/', employeeController.create);
-employeeRouter.get(
+employeeRouter.post(
   '/',
   authenticationMiddleware,
   authorizeRoleMiddleware('Administrador'),
-  employeeController.findAll,
+  employeeController.create,
 );
-employeeRouter.patch('/:id/roles', employeeController.addRole);
-employeeRouter.delete('/:id/roles', employeeController.removeRole);
-employeeRouter.patch('/:id/status', employeeController.updateStatus);
-employeeRouter.get('/:id', employeeController.findById);
+employeeRouter.get('/', authenticationMiddleware, employeeController.findAll);
+employeeRouter.patch(
+  '/:id/roles',
+  authenticationMiddleware,
+  authorizeRoleMiddleware('Administrador'),
+  employeeController.addRole,
+);
+employeeRouter.delete(
+  '/:id/roles',
+  authenticationMiddleware,
+  authorizeRoleMiddleware('Administrador'),
+  employeeController.removeRole,
+);
+employeeRouter.patch(
+  '/:id/status',
+  authenticationMiddleware,
+  authorizeRoleMiddleware('Administrador'),
+  employeeController.updateStatus,
+);
+employeeRouter.get(
+  '/:id',
+  authenticationMiddleware,
+  employeeController.findById,
+);
 
 export default employeeRouter;
