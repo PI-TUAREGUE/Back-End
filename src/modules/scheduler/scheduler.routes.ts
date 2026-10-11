@@ -10,7 +10,7 @@ const schedulerController = new SchedulerController(schedulerService);
 
 schedulerRouter.post('/', schedulerController.create);
 schedulerRouter.get('/', schedulerController.findAll);
-schedulerRouter.patch('/', schedulerController.updateStatus);
-schedulerRouter.get('/', schedulerController.findById);
+schedulerRouter.patch('/:id', schedulerController.updateStatus);
+schedulerRouter.get('/:id', schedulerController.findById);
 
 export default schedulerRouter;
