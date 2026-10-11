@@ -6,7 +6,27 @@ export class SchedulerController {
 
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const scheduler = await this.schedulerService.create(req.body);
+      const {
+        client,
+        plate,
+        car,
+        startDate,
+        endDate,
+        employee,
+        service,
+        status,
+      } = req.body;
+
+      const scheduler = await this.schedulerService.create({
+        client,
+        plate,
+        car,
+        startDate,
+        endDate,
+        employee,
+        service,
+        status,
+      });
       return res.status(201).json(scheduler);
     } catch (error) {
       next(error);

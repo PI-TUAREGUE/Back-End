@@ -29,20 +29,33 @@ const schedulerSchema = new Schema<IScheduler>(
     car: { type: String, required: true },
     startDate: { type: Date, required: true },
     endDate: { type: Date },
-    employee: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Employee',
-        required: true,
-      },
-    ],
-    service: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Service',
-        required: true,
-      },
-    ],
+    employee: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'Employee',
+        },
+      ],
+
+      validate: [
+        (val: Types.ObjectId[]) => val && val.length > 0,
+        'É obrigatório atribuir pelo menos um funcionário.',
+      ],
+    },
+
+    service: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'Service',
+        },
+      ],
+
+      validate: [
+        (val: Types.ObjectId[]) => val && val.length > 0,
+        'É obrigatório atribuir pelo menos um serviço.',
+      ],
+    },
     status: {
       type: String,
       enum: Object.values(SchedulerStatus),
