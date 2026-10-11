@@ -21,9 +21,9 @@ app.use(express.json());
 //Import routes
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 app.use('/employees', employeeRouter);
-app.use('/service', serviceRouter);
+app.use('/services', serviceRouter);
 app.use('/auth', authRouter);
-app.use('/scheduler', schedulerRouter);
+app.use('/schedulers', schedulerRouter);
 
 app.use(errorHandler);
 
