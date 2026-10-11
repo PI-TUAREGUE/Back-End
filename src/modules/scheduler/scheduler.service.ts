@@ -4,6 +4,7 @@ import { SchedulerStatus } from './scheduler.enum';
 import { AppError } from '../../shared/errors/AppError';
 import { ISchedulerFilters } from './scheduler.filters';
 import { EmployeeModel } from '../employee/employee.model';
+import { EmployeeStatus } from '../employee/status.enum';
 import { ServiceModel } from '../service/service.model';
 
 export interface SchedulerDTO {
@@ -19,7 +20,7 @@ export interface SchedulerDTO {
 
 export class SchedulerService {
   async create(data: SchedulerDTO): Promise<IScheduler> {
-    const startDate = new Date(data.startDate);
+    const startDate = new Date();
 
     if (data.endDate && new Date(data.endDate) <= startDate) {
       throw new AppError(
@@ -39,14 +40,17 @@ export class SchedulerService {
       throw new AppError('Informe ao menos um serviço.', 400);
     }
 
-    const [employeeCount, serviceCount] = await Promise.all([
-      EmployeeModel.countDocuments({ _id: { $in: employeeIds } }),
+    const [employees, serviceCount] = await Promise.all([
+      EmployeeModel.find({
+        _id: { $in: employeeIds },
+        status: EmployeeStatus.ACTIVE,
+      }),
       ServiceModel.countDocuments({ _id: { $in: serviceIds } }),
     ]);
 
-    if (employeeCount !== employeeIds.length) {
+    if (employees.length !== employeeIds.length) {
       throw new AppError(
-        'Um ou mais mecânicos informados não foram encontrados.',
+        'Um ou mais mecânicos informados não foram encontrados e/ou estão Inativos',
         404,
       );
     }
@@ -67,7 +71,9 @@ export class SchedulerService {
   }
 
   async findById(id: string): Promise<IScheduler | null> {
-    const scheduler = await SchedulerModel.findById(id).exec();
+    const scheduler = await SchedulerModel.findById(id)
+      .populate('employee', 'name')
+      .populate('service', 'name');
 
     if (!scheduler) {
       throw new AppError('Agendamento não encontrado', 404);
@@ -95,7 +101,9 @@ export class SchedulerService {
       query.plate = { $regex: filters.plate.toUpperCase(), $options: 'i' };
     }
 
-    return await SchedulerModel.find(query).exec();
+    return await SchedulerModel.find(query)
+      .populate('employee', 'name')
+      .populate('service', 'name');
   }
 
   async updateStatus(

@@ -61,6 +61,7 @@ export class SchedulerController {
         status: status as any,
         client: client as string,
       });
+      return res.status(200).json(scheduler);
     } catch (error) {
       next(error);
     }
