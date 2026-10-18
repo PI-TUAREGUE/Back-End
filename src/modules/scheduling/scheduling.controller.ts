@@ -17,16 +17,21 @@ export class SchedulingController {
         status,
       } = req.body;
 
-      const scheduling = await this.schedulingService.create({
-        client,
-        plate,
-        car,
-        startDate,
-        endDate,
-        employee,
-        service,
-        status,
-      });
+      const senderId = req.user!.id;
+
+      const scheduling = await this.schedulingService.create(
+        {
+          client,
+          plate,
+          car,
+          startDate,
+          endDate,
+          employee,
+          service,
+          status,
+        },
+        senderId,
+      );
       return res.status(201).json(scheduling);
     } catch (error) {
       next(error);
