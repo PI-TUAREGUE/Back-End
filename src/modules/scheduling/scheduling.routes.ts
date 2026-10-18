@@ -5,10 +5,13 @@ import { SchedulingController } from './scheduling.controller';
 
 import { authenticationMiddleware } from '../../shared/middlewares/authentication.middleware';
 import { authorizeRoleMiddleware } from '../../shared/middlewares/authorize.middleware';
+import { InvitationService } from '../invitation/invitation.service';
 
 const schedulingRouter = Router();
 
-const schedulingService = new SchedulingService();
+const invitationService = new InvitationService();
+
+const schedulingService = new SchedulingService(invitationService);
 const schedulingController = new SchedulingController(schedulingService);
 
 schedulingRouter.post(

@@ -7,32 +7,32 @@ import { EmployeeModel } from '../employee/employee.model';
 import { Types, ClientSession } from 'mongoose';
 import { EmployeeStatus } from '../employee/status.enum';
 
-export type InvitationDTO = Omit<
-  IInvitation,
-  '_id' | 'status' | 'respondedAt' | 'createdAt' | 'updatedAt'
->;
+export type InvitationDTO = {
+  scheduling: string;
+  senderId: string;
+  employeesIds: string[];
+};
 
 export class InvitationService {
   async create(
-    scheduling: string,
-    senderId: string,
-    employeesIds: string[],
+    data: InvitationDTO,
     session?: ClientSession,
   ): Promise<IInvitation[]> {
-    const employees = await EmployeeModel.find({
-      _id: { $in: employeesIds },
-      status: EmployeeStatus.ACTIVE,
-    });
+    if (!data.employeesIds || data.employeesIds.length === 0) {
+      return [];
+    }
 
-    const schedulingObjId = new Types.ObjectId(scheduling);
-    const senderObjId = new Types.ObjectId(senderId);
+    const schedulingObjId = new Types.ObjectId(data.scheduling);
+    const senderObjId = new Types.ObjectId(data.senderId);
 
-    const invitationsData = employees.map((emp) => ({
+    const invitationsData = data.employeesIds.map((employeeId) => ({
       scheduling: schedulingObjId,
-      senderId: senderObjId,
-      receiver: emp._id,
+      sender: senderObjId,
+      receiver: new Types.ObjectId(employeeId),
     }));
 
-    return await InvitationModel.insertMany(invitationsData, { session });
+    return (await InvitationModel.insertMany(invitationsData, {
+      session,
+    })) as IInvitation[];
   }
 }

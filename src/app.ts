@@ -11,6 +11,7 @@ import employeeRouter from './modules/employee/employee.routes';
 import serviceRouter from './modules/service/service.routes';
 import authRouter from './modules/auth/auth.routes';
 import schedulingRouter from './modules/scheduling/scheduling.routes';
+import invitationRouter from './modules/invitation/invitation.routes';
 
 //Init express app
 const app = express();
@@ -24,6 +25,7 @@ app.use('/employees', employeeRouter);
 app.use('/services', serviceRouter);
 app.use('/auth', authRouter);
 app.use('/schedulings', schedulingRouter);
+app.use('/invitations', invitationRouter);
 
 app.use(errorHandler);
 
