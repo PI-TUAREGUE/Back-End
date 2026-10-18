@@ -6,14 +6,14 @@ export class InvitationController {
 
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const senderId = String(req.user?.id);
-      const { schedulingId, receiverId } = req.body;
+      const senderId = req.user!.id;
+      const { scheduling, employeesIds } = req.body;
 
-      const invitation = await this.invitationService.create(
+      const invitation = await this.invitationService.create({
+        scheduling,
         senderId,
-        schedulingId,
-        receiverId,
-      );
+        employeesIds,
+      });
       return res.status(201).json(invitation);
     } catch (error) {
       next(error);

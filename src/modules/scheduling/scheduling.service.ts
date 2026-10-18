@@ -16,6 +16,7 @@ export interface SchedulingDTO {
   startDate: Date;
   endDate?: Date;
   employee: (string | Types.ObjectId)[];
+  invitedEmployees?: (string | Types.ObjectId)[];
   service: (string | Types.ObjectId)[];
   status: SchedulingStatus;
 }
@@ -37,11 +38,34 @@ export class SchedulingService {
         senderId.toString(),
       ]),
     ];
-    const serviceIds = [...new Set(data.service.map((id) => id.toString()))];
 
     if (employeeIds.length === 0) {
       throw new AppError('Informe ao menos um mecânico.', 400);
     }
+
+    const invitedIds = [
+      ...new Set(
+        (data.invitedEmployees || [])
+          .map((id) => id.toString())
+          .filter((id) => id !== senderId),
+      ),
+    ];
+
+    if (invitedIds.length > 0) {
+      const activeEmployeesCount = await EmployeeModel.countDocuments({
+        _id: { $in: invitedIds },
+        status: EmployeeStatus.ACTIVE,
+      });
+
+      if (activeEmployeesCount !== invitedIds.length) {
+        throw new AppError(
+          'Um ou mais mecânicos convidados não foram encontrados ou estão inativos.',
+          404,
+        );
+      }
+    }
+
+    const serviceIds = [...new Set(data.service.map((id) => id.toString()))];
 
     if (serviceIds.length === 0) {
       throw new AppError('Informe ao menos um serviço.', 400);
@@ -80,20 +104,18 @@ export class SchedulingService {
             {
               ...data,
               employee: employeeIds,
-              service: serviceIds,
+              service: [senderId],
             },
           ],
           { session },
         );
 
-        const receiverIds = employeeIds.filter((id) => id !== senderId);
-
-        if (receiverIds.length > 0) {
+        if (invitedIds.length > 0) {
           await this.invitationService.create(
             {
               scheduling: scheduling._id.toString(),
               senderId: senderId,
-              employeesIds: receiverIds,
+              employeesIds: invitedIds,
             },
             session,
           );
@@ -102,12 +124,8 @@ export class SchedulingService {
         createdScheduling = scheduling;
       });
     } catch (error) {
-      console.error('ERRO REAL DA TRANSAÇÃO:', error);
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        'Falha ao criar o agendamento e enviar convites.',
-        500,
-      );
+      throw new AppError(String(error), 500);
     } finally {
       await session.endSession();
     }
