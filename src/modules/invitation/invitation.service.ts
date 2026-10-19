@@ -39,7 +39,7 @@ export class InvitationService {
     })) as IInvitation[];
   }
 
-  async findById(id: string): Promise<IInvitation> {
+  async findById(id: String): Promise<IInvitation> {
     const invitation = await InvitationModel.findById(id).exec();
 
     if (!invitation) {
@@ -94,6 +94,10 @@ export class InvitationService {
       await SchedulingModel.findByIdAndUpdate(schedulingId, {
         $addToSet: { employee: new Types.ObjectId(empId) },
       });
+    }
+
+    if (status === InvitationStatus.REJECTED) {
+      await invitation.save();
     }
   }
 }
