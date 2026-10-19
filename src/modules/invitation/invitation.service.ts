@@ -2,10 +2,13 @@ import { InvitationModel, IInvitation } from './invitation.model';
 import { InvitationStatus } from './status.enum';
 
 import { AppError } from '../../shared/errors/AppError';
-import { EmployeeModel } from '../employee/employee.model';
 
 import { Types, ClientSession } from 'mongoose';
 import { EmployeeStatus } from '../employee/status.enum';
+import { InvitationFilters } from './invitation.filters';
+
+import { IScheduling } from '../scheduling/scheduling.model';
+import { SchedulingModel } from '../scheduling/scheduling.model';
 
 export type InvitationDTO = {
   scheduling: string;
@@ -34,5 +37,63 @@ export class InvitationService {
     return (await InvitationModel.insertMany(invitationsData, {
       session,
     })) as IInvitation[];
+  }
+
+  async findById(id: string): Promise<IInvitation> {
+    const invitation = await InvitationModel.findById(id).exec();
+
+    if (!invitation) {
+      throw new AppError('Convite não encontrado', 404);
+    }
+
+    return invitation;
+  }
+
+  async findByEmployeeId(
+    empId: string,
+    filters: InvitationFilters,
+  ): Promise<IInvitation[]> {
+    const query: Record<string, any> = {
+      receiver: empId,
+    };
+
+    if (
+      filters.status &&
+      Object.values(InvitationStatus).includes(filters.status)
+    ) {
+      query.status = filters.status;
+    }
+
+    if (filters.date) {
+      query.date = filters.date;
+    }
+
+    return await InvitationModel.find(query).exec();
+  }
+
+  async respondToInvitation(
+    id: string,
+    empId: string,
+    status: InvitationStatus,
+  ): Promise<void> {
+    const invitation = await InvitationModel.findById(id);
+
+    if (!invitation) {
+      throw new AppError('Convite não encontrado');
+    }
+
+    if (invitation.status !== InvitationStatus.PENDING) {
+    }
+
+    invitation.status = status;
+    await invitation.save();
+
+    if (status === InvitationStatus.ACCEPTED) {
+      const schedulingId = invitation.scheduling._id || invitation.scheduling;
+
+      await SchedulingModel.findByIdAndUpdate(schedulingId, {
+        $addToSet: { employee: new Types.ObjectId(empId) },
+      });
+    }
   }
 }
