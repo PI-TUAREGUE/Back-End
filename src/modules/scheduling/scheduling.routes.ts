@@ -26,7 +26,7 @@ schedulingRouter.get(
   schedulingController.findAll,
 );
 schedulingRouter.patch(
-  '/:id',
+  '/:id/status',
   authenticationMiddleware,
   authorizeRoleMiddleware('Mecânico'),
   schedulingController.updateStatus,
