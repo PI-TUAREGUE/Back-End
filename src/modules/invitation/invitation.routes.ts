@@ -18,4 +18,22 @@ invitationRouter.post(
   invitationController.create,
 );
 
+invitationRouter.get(
+  '/:id',
+  authenticationMiddleware,
+  invitationController.findById,
+);
+
+invitationRouter.get(
+  '/',
+  authenticationMiddleware,
+  invitationController.findByEmployeeId,
+);
+
+invitationRouter.patch(
+  '/:id',
+  authenticationMiddleware,
+  invitationController.respondToInvitation,
+);
+
 export default invitationRouter;
