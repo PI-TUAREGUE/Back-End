@@ -43,7 +43,7 @@ O projeto está totalmente "dockerizado", o que facilita a execução do ambient
     Clone o repositório:
     Bash
 
-    git clone https://github.com/GustaGevigi/Internship-Equivalency.git](https://github.com/PI-TUAREGUE/Back-End.git
+    git clone https://github.com/PI-TUAREGUE/Back-End.git
 
     Configure as variáveis de ambiente:
     Crie um arquivo .env na raiz (baseado no .env.example).
