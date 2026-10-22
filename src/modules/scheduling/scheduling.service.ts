@@ -1,13 +1,18 @@
+import { AppError } from '../../shared/errors/AppError';
+
 import mongoose, { Types } from 'mongoose';
+
 import { SchedulingModel, IScheduling } from './scheduling.model';
 import { SchedulingStatus } from './scheduling.enum';
-import { AppError } from '../../shared/errors/AppError';
 import { ISchedulingFilters } from './scheduling.filters';
+
 import { EmployeeModel } from '../employee/employee.model';
 import { EmployeeStatus } from '../employee/status.enum';
+
 import { ServiceModel } from '../service/service.model';
 
 import { InvitationService } from '../invitation/invitation.service';
+import { getIO } from '../../shared/config/webSocket';
 
 export interface SchedulingDTO {
   client: string;
@@ -111,7 +116,7 @@ export class SchedulingService {
         );
 
         if (invitedIds.length > 0) {
-          await this.invitationService.create(
+          const invitations = await this.invitationService.create(
             {
               scheduling: scheduling._id.toString(),
               senderId: senderId,
@@ -119,6 +124,17 @@ export class SchedulingService {
             },
             session,
           );
+
+          const io = getIO();
+
+          invitations.forEach((invitation) => {
+            const receiverId = invitation.receiver._id;
+
+            io.to(receiverId.toString()).emit('invitation:received', {
+              message: 'Você recebeu um novo convite de agendamento.',
+              invitation: invitation,
+            });
+          });
         }
 
         createdScheduling = scheduling;
