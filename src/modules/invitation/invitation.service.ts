@@ -79,10 +79,18 @@ export class InvitationService {
     const invitation = await InvitationModel.findById(id);
 
     if (!invitation) {
-      throw new AppError('Convite não encontrado');
+      throw new AppError('Convite não encontrado', 404);
     }
 
     if (invitation.status !== InvitationStatus.PENDING) {
+      throw new AppError('Convite não está pendente', 400);
+    }
+
+    if (invitation.receiver.toString() !== empId) {
+      throw new AppError(
+        'Você não tem permissão para responder a este convite.',
+        403,
+      );
     }
 
     invitation.status = status;

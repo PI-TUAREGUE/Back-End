@@ -33,8 +33,16 @@ export class SchedulingService {
     if (data.endDate && new Date(data.endDate) <= data.startDate) {
       throw new AppError(
         'A data de término deve ser posterior à data de início.',
-        404,
+        400,
       );
+    }
+
+    if (!data.employee || data.employee.length === 0) {
+      throw new AppError('A lista de mecânicos não pode estar vazia', 400);
+    }
+
+    if (!data.service || data.service.length === 0) {
+      throw new AppError('A lista de serviços não pode estar vazia', 400);
     }
 
     const employeeIds = [
