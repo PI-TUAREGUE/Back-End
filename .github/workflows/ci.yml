@@ -1,0 +1,31 @@
+name: CI - Testes e Validação de Build
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Lint, Build e Testes Unitários
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Setup do Node.JS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Instalar Dependências
+        run: npm ci
+
+      - name: Compilar o TypeScript (Build)
+        run: npm run build
+
+      - name: Rodar Testes Unitários
+        run: npm run test
