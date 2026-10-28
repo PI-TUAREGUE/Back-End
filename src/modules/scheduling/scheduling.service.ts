@@ -117,7 +117,7 @@ export class SchedulingService {
             {
               ...data,
               employee: employeeIds,
-              service: [senderId],
+              service: serviceIds,
             },
           ],
           { session },
@@ -174,6 +174,10 @@ export class SchedulingService {
 
     if (filters.status) {
       query.status = filters.status;
+    }
+
+    if (filters.startDate) {
+      query.startDate = filters.startDate;
     }
 
     if (filters.client) {

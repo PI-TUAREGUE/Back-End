@@ -6,5 +6,6 @@ export interface ISchedulingFilters {
   car?: string;
   startDate?: Date;
   endDate?: Date;
+  createdAt?: Date;
   status?: SchedulingStatus;
 }
