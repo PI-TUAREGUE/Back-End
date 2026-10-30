@@ -1,5 +1,7 @@
 //Imports
 import express from 'express';
+import path from 'path';
+
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpecs from './shared/config/swagger';
@@ -26,6 +28,7 @@ app.use('/services', serviceRouter);
 app.use('/auth', authRouter);
 app.use('/schedulings', schedulingRouter);
 app.use('/invitations', invitationRouter);
+app.use('/uploads', express.static(path.resolve(__dirname, '..', 'uploads')));
 
 app.use(errorHandler);
 

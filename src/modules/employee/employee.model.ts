@@ -10,6 +10,7 @@ export interface IEmployee extends Document {
   password: string;
   roles: EmployeeRole[];
   status: EmployeeStatus;
+  avatarUrl: string;
 }
 
 const employeeSchema = new Schema<IEmployee>(
@@ -29,6 +30,7 @@ const employeeSchema = new Schema<IEmployee>(
       default: EmployeeStatus.ACTIVE,
       required: true,
     },
+    avatarUrl: { type: String, required: false },
   },
   {
     timestamps: true,

@@ -6,7 +6,14 @@ export class EmployeeController {
 
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const employee = await this.employeeService.create(req.body);
+      const avatarUrl = req.file
+        ? req.file.path.replace(/\\/g, '/')
+        : undefined;
+
+      const employee = await this.employeeService.create({
+        ...req.body,
+        avatarUrl,
+      });
       return res.status(201).json(employee);
     } catch (error) {
       next(error);

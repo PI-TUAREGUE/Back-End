@@ -4,6 +4,7 @@ import { EmployeeService } from './employee.service';
 import { EmployeeController } from './employee.controller';
 import { authenticationMiddleware } from '../../shared/middlewares/authentication.middleware';
 import { authorizeRoleMiddleware } from '../../shared/middlewares/authorize.middleware';
+import { uploadMiddleware } from '../../shared/middlewares/upload.middleware';
 
 const employeeRouter = Router();
 
@@ -53,8 +54,9 @@ const employeeController = new EmployeeController(employeeService);
  */
 employeeRouter.post(
   '/',
-  authenticationMiddleware,
-  authorizeRoleMiddleware('Administrador'),
+  //authenticationMiddleware,
+  //authorizeRoleMiddleware('Administrador'),
+  uploadMiddleware,
   employeeController.create,
 );
 /**
