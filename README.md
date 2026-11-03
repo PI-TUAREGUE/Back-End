@@ -2,7 +2,9 @@ Projeto Integrador: Agendamento Tuaregue Automotiva
 
 API desenvolvida para o sistema de agendamento interno para a oficina mecânica Tuaregue Automotiva. O sistema permite desde o cadastro e visualização de Agendamentos, Serviços e Funcionários visando a eficiência no planejamento do fluxo de trabalho pelos funcionários de maneira 100% digital.
 
-🚀 Tecnologias
+Documentação da API: https://pi-tuaregue.github.io/Back-End/#/employee/paths/~1employees~1{id}~1status/patch
+
+Tecnologias
 
     Ambiente: Node.js
 
@@ -22,9 +24,9 @@ API desenvolvida para o sistema de agendamento interno para a oficina mecânica 
 
     Swagger: Documentação e Teste de Rotas e API's respectivas
 
-🏗️ Arquitetura
+Arquitetura
 
-O projeto foi desenvolvido utilizando uma arquitetura monolítica modular, visando a organização de domínios e/ou funcionalidades e garantindo fácil escalabilidade de projeto.
+O projeto foi desenvolvido utilizando arquitetura monolítica modular, visando a organização de domínios e garantindo fácil escalabilidade de projeto.
 
     Auth: Módulo responsável pelas funcionalidades de autenticação do sistema.
 
@@ -36,7 +38,7 @@ O projeto foi desenvolvido utilizando uma arquitetura monolítica modular, visan
 
     Invitation: Fluxo resposável pelo convite para outros Funcionários de cargo "Mecânico" participarem de outros agendamentos.
 
-🏁 Como Executar
+Como Executar
 
 O projeto está totalmente "dockerizado", o que facilita a execução do ambiente de desenvolvimento.
 
@@ -53,9 +55,9 @@ O projeto está totalmente "dockerizado", o que facilita a execução do ambient
 
     docker compose up -d
 
-A API estará disponível em http://localhost:3000/api-docs.
+O Swagger estará disponível em http://localhost:3000/api-docs.
 
-🔐 Segurança e Roles
+Segurança e Roles
 
 O acesso é controlado por permissões granulares:
 
