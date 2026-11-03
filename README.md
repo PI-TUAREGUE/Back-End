@@ -2,7 +2,7 @@ Projeto Integrador: Agendamento Tuaregue Automotiva
 
 API desenvolvida para o sistema de agendamento interno para a oficina mecânica Tuaregue Automotiva. O sistema permite desde o cadastro e visualização de Agendamentos, Serviços e Funcionários visando a eficiência no planejamento do fluxo de trabalho pelos funcionários de maneira 100% digital.
 
-Documentação da API: https://pi-tuaregue.github.io/Back-End/#/employee/paths/~1employees~1{id}~1status/patch
+Documentação da API: https://pi-tuaregue.github.io/Back-End/#/
 
 Tecnologias
 
