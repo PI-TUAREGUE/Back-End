@@ -6,6 +6,8 @@ import { ServiceController } from './service.controller';
 import { authenticationMiddleware } from '../../shared/middlewares/authentication.middleware';
 import { authorizeRoleMiddleware } from '../../shared/middlewares/authorize.middleware';
 
+import { uploadMiddleware } from '../../shared/middlewares/upload.middleware';
+
 import { validateBody } from '../../shared/middlewares/validateBody.middleware';
 import { serviceSchema } from './service.zod.schema';
 
@@ -59,6 +61,7 @@ serviceRouter.post(
   '/',
   authenticationMiddleware,
   authorizeRoleMiddleware('Administrador'),
+  uploadMiddleware,
   validateBody(serviceSchema),
   serviceController.create,
 );

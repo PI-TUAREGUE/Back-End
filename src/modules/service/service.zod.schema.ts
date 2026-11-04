@@ -1,6 +1,8 @@
 import z from 'zod';
 
 export const serviceSchema = z.object({
+  avatarUrl: z.string().optional(),
+
   name: z
     .string('Nome é obrigatório')
     .min(3, 'Nome deve ter um mínimo de 3 caracteres.')
