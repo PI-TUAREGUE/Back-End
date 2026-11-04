@@ -6,6 +6,9 @@ import { ServiceController } from './service.controller';
 import { authenticationMiddleware } from '../../shared/middlewares/authentication.middleware';
 import { authorizeRoleMiddleware } from '../../shared/middlewares/authorize.middleware';
 
+import { validateBody } from '../../shared/middlewares/validateBody.middleware';
+import { serviceSchema } from './service.zod.schema';
+
 const serviceRouter = Router();
 
 const serviceService = new ServiceService();
@@ -56,6 +59,7 @@ serviceRouter.post(
   '/',
   authenticationMiddleware,
   authorizeRoleMiddleware('Administrador'),
+  validateBody(serviceSchema),
   serviceController.create,
 );
 /**
