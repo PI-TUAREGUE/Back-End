@@ -2,7 +2,7 @@ import z from 'zod';
 
 export const employeeSchema = z.object({
   name: z
-    .string('Nome é obrigatório.')
+    .string('Nome do serviço é obrigatório.')
     .min(3, 'Nome deve ter mínimo de 3 caracteres.')
     .max(100, 'Nome pode conter um máximo de 20 caracteres.'),
 

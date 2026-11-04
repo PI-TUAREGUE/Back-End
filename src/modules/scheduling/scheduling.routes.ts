@@ -5,6 +5,10 @@ import { SchedulingController } from './scheduling.controller';
 
 import { authenticationMiddleware } from '../../shared/middlewares/authentication.middleware';
 import { authorizeRoleMiddleware } from '../../shared/middlewares/authorize.middleware';
+
+import { validateBody } from '../../shared/middlewares/validateBody.middleware';
+import { schedulingSchema } from './scheduling.zod.schema';
+
 import { InvitationService } from '../invitation/invitation.service';
 
 const schedulingRouter = Router();
@@ -65,6 +69,7 @@ schedulingRouter.post(
   '/',
   authenticationMiddleware,
   authorizeRoleMiddleware('Mecânico'),
+  validateBody(schedulingSchema),
   schedulingController.create,
 );
 /**
