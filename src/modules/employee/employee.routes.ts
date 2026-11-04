@@ -2,9 +2,14 @@ import { Router } from 'express';
 
 import { EmployeeService } from './employee.service';
 import { EmployeeController } from './employee.controller';
+
 import { authenticationMiddleware } from '../../shared/middlewares/authentication.middleware';
 import { authorizeRoleMiddleware } from '../../shared/middlewares/authorize.middleware';
+
 import { uploadMiddleware } from '../../shared/middlewares/upload.middleware';
+
+import { validateBody } from '../../shared/middlewares/validateBody.middleware';
+import { employeeSchema } from './employee.zod.schema';
 
 const employeeRouter = Router();
 
@@ -57,6 +62,7 @@ employeeRouter.post(
   authenticationMiddleware,
   authorizeRoleMiddleware('Administrador'),
   uploadMiddleware,
+  validateBody(employeeSchema),
   employeeController.create,
 );
 /**
