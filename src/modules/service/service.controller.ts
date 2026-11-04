@@ -6,7 +6,15 @@ export class ServiceController {
 
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const service = await this.serviceService.create(req.body);
+      const avatarUrl = req.file
+        ? req.file.path.replace(/\\/g, '/')
+        : undefined;
+
+      const service = await this.serviceService.create({
+        ...req.body,
+        avatarUrl,
+      });
+
       return res.status(201).json(service);
     } catch (error) {
       next(error);
