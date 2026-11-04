@@ -18,4 +18,20 @@ export const employeeSchema = z.object({
     .string('Senha é obrigatória.')
     .min(8, 'A senha deve conter um mínimo de 8 caracteres')
     .max(100, 'A senha pode conter um máximo de 100 caracteres.'),
+
+  roles: z.preprocess((roles) => {
+    if (roles === 'string') {
+      try {
+        const parsed = JSON.parse(roles);
+        if (Array.isArray(roles)) return parsed;
+      } catch (error) {
+        return [roles];
+      }
+      return [roles];
+    }
+
+    if (Array.isArray(roles)) return roles;
+
+    return [];
+  }, z.array(z.string())),
 });
