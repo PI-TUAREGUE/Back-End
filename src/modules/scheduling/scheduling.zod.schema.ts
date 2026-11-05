@@ -6,6 +6,11 @@ export const schedulingSchema = z.object({
     .min(3, 'Nome do serviço deve conter um mínimo de 3 caracteres.')
     .max(100, 'Nome do serviço pode conter um máximo de 20 caracteres.'),
 
+  clientTel: z
+    .string('Telefone do cliente é obrigatório.')
+    .min(11, 'Número inválido')
+    .max(16, 'Número inválido'),
+
   plate: z
     .string('Placa do veículo é obrigatória.')
     .min(8, 'Placa inválida.')

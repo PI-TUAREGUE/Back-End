@@ -1,9 +1,11 @@
 import { model, Schema, Document, Types } from 'mongoose';
 
 import { SchedulingStatus } from './scheduling.enum';
+import { required } from 'zod/mini';
 
 export interface IScheduling extends Document {
   client: string;
+  clientTel: string;
   plate: string;
   car: string;
   startDate: Date;
@@ -16,6 +18,10 @@ export interface IScheduling extends Document {
 const schedulingSchema = new Schema<IScheduling>(
   {
     client: { type: String, required: true },
+    clientTel: {
+      type: String,
+      required: true,
+    },
     plate: {
       type: String,
       required: true,
