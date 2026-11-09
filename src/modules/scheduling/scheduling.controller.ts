@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { SchedulingService } from './scheduling.service';
 
+import PDFDocument from 'pdfkit';
+
 export class SchedulingController {
   constructor(private schedulingService: SchedulingService) {}
 
@@ -68,6 +70,36 @@ export class SchedulingController {
         status,
       );
       return res.status(200).json(scheduling);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  generateReceipt = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+
+      const receipt = await this.schedulingService.generateReceipt(String(id));
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=comprovante.pdf',
+      );
+
+      const doc = new PDFDocument();
+      doc.pipe(res);
+
+      doc.fontSize(20).text('Comprovante de Agendamento');
+      doc.text(`Cliente: ${receipt.client}`);
+      doc.text(`Placa: ${receipt.plate}`);
+      doc.text(`Veículo: ${receipt.car}`);
+      doc.text(`Previsto para: ${receipt.endDate}`);
+      doc.text(
+        `Serviços a serem prestados: ${Array.isArray(receipt.service) ? receipt.service.join(', ') : receipt.service}`,
+      );
+
+      doc.end();
     } catch (error) {
       next(error);
     }
