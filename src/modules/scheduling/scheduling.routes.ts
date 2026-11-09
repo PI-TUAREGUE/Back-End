@@ -212,4 +212,10 @@ schedulingRouter.get(
   schedulingController.findById,
 );
 
+schedulingRouter.get(
+  '/:id/receipt',
+  authenticationMiddleware,
+  schedulingController.generateReceipt,
+);
+
 export default schedulingRouter;

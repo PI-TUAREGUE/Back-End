@@ -1,6 +1,7 @@
 import { AppError } from '../../shared/errors/AppError';
 
 import mongoose, { Types } from 'mongoose';
+import { getIO } from '../../shared/config/webSocket';
 
 import { SchedulingModel, IScheduling } from './scheduling.model';
 import { SchedulingStatus } from './scheduling.enum';
@@ -12,7 +13,6 @@ import { EmployeeStatus } from '../employee/status.enum';
 import { ServiceModel } from '../service/service.model';
 
 import { InvitationService } from '../invitation/invitation.service';
-import { getIO } from '../../shared/config/webSocket';
 
 export interface SchedulingDTO {
   client: string;
@@ -25,6 +25,11 @@ export interface SchedulingDTO {
   service: (string | Types.ObjectId)[];
   status: SchedulingStatus;
 }
+
+interface ReceiptDTO extends Omit<
+  SchedulingDTO,
+  'startDate' | 'employee' | 'invitedEmployees' | 'status'
+> {}
 
 export class SchedulingService {
   constructor(private invitationService: InvitationService) {}
@@ -215,5 +220,23 @@ export class SchedulingService {
     }
 
     return updateScheduling;
+  }
+
+  async generateReceipt(id: string): Promise<ReceiptDTO> {
+    const scheduling = await SchedulingModel.findById(id).populate('service');
+
+    if (!scheduling) {
+      throw new AppError('Agendamento não encontrado.', 404);
+    }
+
+    const serviceNames = (scheduling.service as any[]).map((s) => s.name);
+
+    return {
+      client: scheduling.client,
+      plate: scheduling.plate,
+      car: scheduling.car,
+      endDate: scheduling.endDate,
+      service: serviceNames,
+    };
   }
 }

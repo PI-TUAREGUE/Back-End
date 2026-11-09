@@ -59,8 +59,8 @@ const employeeController = new EmployeeController(employeeService);
  */
 employeeRouter.post(
   '/',
-  //authenticationMiddleware,
-  //authorizeRoleMiddleware('Administrador'),
+  authenticationMiddleware,
+  authorizeRoleMiddleware('Administrador'),
   uploadMiddleware,
   validateBody(employeeSchema),
   employeeController.create,
