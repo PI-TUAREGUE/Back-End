@@ -54,7 +54,7 @@ export class ServiceService {
   ): Promise<IService | null> {
     const scheduling = await SchedulingModel.findOne({
       service: id,
-      status: { $in: ['Agendado', 'Em progresso', 'Cancelado'] },
+      status: { $in: ['Agendado', 'Em progresso', 'Cancelado'] as any },
     }).exec();
 
     if (scheduling) {
