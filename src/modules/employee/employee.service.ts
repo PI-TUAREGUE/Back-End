@@ -1,5 +1,7 @@
 import bcrypt from 'bcrypt';
 
+import { Document, Schema, SchemaTypes, model } from 'mongoose';
+
 import { EmployeeModel, IEmployee } from './employee.model';
 
 import { EmployeeRole } from './roles.enum';
@@ -7,6 +9,7 @@ import { EmployeeStatus } from './status.enum';
 
 import { AppError } from '../../shared/errors/AppError';
 import { IEmployeeFilters } from './employee.filters';
+import { SchedulingModel } from '../scheduling/scheduling.model';
 
 export type EmployeeDTO = Omit<IEmployee, '_id' | 'createdAt' | 'updatedAt'>;
 
@@ -79,7 +82,25 @@ export class EmployeeService {
   }
 
   async removeRole(id: string, role: EmployeeRole): Promise<IEmployee | null> {
-    const employee = await EmployeeModel.findByIdAndUpdate(
+    const scheduling = await SchedulingModel.findOne({
+      employee: id,
+      status: { $in: ['Agendado', 'Em progresso', 'Cancelado'] as any },
+    });
+
+    const employee = await EmployeeModel.findById(id).exec();
+
+    if (!employee) {
+      throw new AppError('Usuário não encontrado.', 404);
+    }
+
+    if (scheduling && employee.roles.includes(EmployeeRole.MECHANIC)) {
+      throw new AppError(
+        'Não é possível alterar o status do colaborador, pois existem agendamentos em andamento com este colaborador vinculado.',
+        400,
+      );
+    }
+
+    const updatedEmployee = EmployeeModel.findByIdAndUpdate(
       id,
       {
         $pull: { roles: role },
@@ -88,19 +109,33 @@ export class EmployeeService {
         new: true,
         runValidators: true,
       },
-    ).exec();
+    );
 
-    if (!employee) {
-      throw new AppError('Usuário não encontrado.', 404);
-    }
-
-    return employee;
+    return updatedEmployee;
   }
 
   async updateStatus(
     id: string,
     status: EmployeeStatus,
   ): Promise<IEmployee | null> {
+    const employee = await EmployeeModel.findById(id).exec();
+
+    if (!employee) {
+      throw new AppError('Usuário não encontrado.', 400);
+    }
+
+    const scheduling = await SchedulingModel.findOne({
+      employee: id,
+      status: { $in: ['Agendado', 'Em progresso', 'Cancelado'] as any },
+    });
+
+    if (scheduling && employee.roles.includes(EmployeeRole.MECHANIC)) {
+      throw new AppError(
+        'Não é possível alterar o status do colaborador, pois existem agendamentos em andamento com este colaborador vinculado.',
+        400,
+      );
+    }
+
     const updatedEmployee = await EmployeeModel.findByIdAndUpdate(
       id,
       { $set: { status: status } },
