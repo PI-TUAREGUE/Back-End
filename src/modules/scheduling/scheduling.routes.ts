@@ -212,6 +212,43 @@ schedulingRouter.get(
   schedulingController.findById,
 );
 
+/**
+ * @openapi
+ * /schedulings/{id}/receipt:
+ *   get:
+ *     tags: [Scheduling]
+ *     summary: Download a scheduling receipt
+ *     description: Generates a PDF receipt containing the client's name, vehicle details, scheduled end date, and services.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Scheduling MongoDB ID.
+ *     responses:
+ *       '200':
+ *         description: Scheduling receipt PDF.
+ *         content:
+ *           application/pdf:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       '401':
+ *         description: Authentication required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       '404':
+ *         description: Scheduling not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 schedulingRouter.get(
   '/:id/receipt',
   authenticationMiddleware,
