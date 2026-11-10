@@ -1,4 +1,5 @@
 import { ServiceModel, IService } from './service.model';
+import { SchedulingModel } from '../scheduling/scheduling.model';
 
 import { ServiceStatus } from './status.enum';
 import { AppError } from '../../shared/errors/AppError';
@@ -51,6 +52,18 @@ export class ServiceService {
     id: string,
     status: ServiceStatus,
   ): Promise<IService | null> {
+    const scheduling = await SchedulingModel.findOne({
+      service: id,
+      status: { $in: ['Agendado', 'Em progresso', 'Cancelado'] as any },
+    }).exec();
+
+    if (scheduling) {
+      throw new AppError(
+        'Não é possível alterar o status do serviço, pois existem agendamentos em andamento com este serviço vinculado.',
+        400,
+      );
+    }
+
     const updateService = await ServiceModel.findByIdAndUpdate(
       id,
       { $set: { status: status } },
