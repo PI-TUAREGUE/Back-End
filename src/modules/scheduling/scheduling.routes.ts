@@ -112,6 +112,66 @@ schedulingRouter.get(
   authenticationMiddleware,
   schedulingController.findAll,
 );
+
+/**
+ * @openapi
+ * /schedulings/{schedulingId}/add-service:
+ *   post:
+ *     tags: [Scheduling]
+ *     summary: Add a service to a scheduling
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: schedulingId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Scheduling MongoDB ID.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [serviceId]
+ *             properties:
+ *               serviceId:
+ *                 type: string
+ *                 description: MongoDB ID of the active service to add.
+ *     responses:
+ *       '200':
+ *         description: Service added. Returns the updated scheduling.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Scheduling'
+ *       '400':
+ *         description: Service is inactive or is already included in the scheduling.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       '401':
+ *         description: Authentication required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       '404':
+ *         description: Scheduling or service not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+schedulingRouter.post(
+  '/:schedulingId/services',
+  authenticationMiddleware,
+  authorizeRoleMiddleware('Mecânico'),
+  schedulingController.addService,
+);
+
 /**
  * @openapi
  * /schedulings/{id}/status:

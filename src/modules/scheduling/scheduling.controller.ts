@@ -61,6 +61,21 @@ export class SchedulingController {
     }
   };
 
+  addService = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { schedulingId } = req.params;
+      const { serviceId } = req.body;
+      const scheduling = await this.schedulingService.addService(
+        String(schedulingId),
+        serviceId,
+      );
+
+      return res.status(200).json(scheduling);
+    } catch (error) {
+      next(error);
+    }
+  };
+
   updateStatus = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;

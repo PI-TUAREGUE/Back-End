@@ -202,6 +202,41 @@ export class SchedulingService {
       .populate('service', 'name');
   }
 
+  async addService(
+    schedulingId: string,
+    serviceId: string,
+  ): Promise<IScheduling | null> {
+    const scheduling = await SchedulingModel.findById(schedulingId);
+
+    if (!scheduling) {
+      throw new AppError('Agendamento não encontrado', 404);
+    }
+
+    const service = await ServiceModel.findById(serviceId);
+
+    if (!service) {
+      throw new AppError('Serviço não encontrado', 404);
+    }
+
+    if (service.status.includes('Inativo')) {
+      throw new AppError('Serviço selecionado não está ativo.', 400);
+    }
+
+    const serviceAlrdyAdded = scheduling.service.some(
+      (id) => id.toString() === serviceId.toString(),
+    );
+
+    if (serviceAlrdyAdded) {
+      throw new AppError('Serviço já existe no agendamento.', 400);
+    }
+
+    scheduling.service.push(service._id);
+
+    await scheduling.save();
+
+    return scheduling;
+  }
+
   async updateStatus(
     id: string,
     status: SchedulingStatus,
