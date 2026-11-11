@@ -257,6 +257,52 @@ export class SchedulingService {
     return updateScheduling;
   }
 
+  async updateStartDate(
+    id: string,
+    startDate: Date,
+  ): Promise<IScheduling | null> {
+    const scheduling = await SchedulingModel.findByIdAndUpdate(id);
+
+    if (!scheduling) {
+      throw new AppError('Agendamento não encontrado.', 404);
+    }
+
+    if (
+      scheduling.endDate &&
+      new Date(startDate) >= new Date(scheduling.endDate)
+    ) {
+      throw new AppError(
+        'A data de início não pode ser menor que a data de término.',
+        400,
+      );
+    }
+
+    scheduling.startDate = startDate;
+    await scheduling.save();
+
+    return scheduling;
+  }
+
+  async updateEndDate(id: string, endDate: Date): Promise<IScheduling | null> {
+    const scheduling = await SchedulingModel.findById(id);
+
+    if (!scheduling) {
+      throw new AppError('Agendamento não encontrado.', 404);
+    }
+
+    if (new Date(endDate) <= new Date(scheduling.startDate)) {
+      throw new AppError(
+        'A data de término não pode ser menor que a data de início.',
+        400,
+      );
+    }
+
+    scheduling.endDate = endDate;
+    await scheduling.save();
+
+    return scheduling;
+  }
+
   async generateReceipt(id: string): Promise<ReceiptDTO> {
     const scheduling = await SchedulingModel.findById(id).populate('service');
 

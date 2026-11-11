@@ -231,6 +231,140 @@ schedulingRouter.patch(
   authorizeRoleMiddleware('Mecânico'),
   schedulingController.updateStatus,
 );
+
+/**
+ * @openapi
+ * /schedulings/{id}/startDate:
+ *   patch:
+ *     tags: [Scheduling]
+ *     summary: Update a scheduling's start date
+ *     description: Requires the Mechanic role. The new start date must be earlier than the scheduling's end date, if one is set.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Scheduling MongoDB ID.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [startDate]
+ *             properties:
+ *               startDate:
+ *                 type: string
+ *                 format: date-time
+ *                 example: '2025-01-20T09:00:00.000Z'
+ *     responses:
+ *       '200':
+ *         description: Start date updated. Returns the updated scheduling.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Scheduling'
+ *       '400':
+ *         description: Start date is not earlier than the end date.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       '401':
+ *         description: Authentication required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       '403':
+ *         description: Mechanic role required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       '404':
+ *         description: Scheduling not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+schedulingRouter.patch(
+  '/:id/startDate',
+  authenticationMiddleware,
+  authorizeRoleMiddleware('Mecânico'),
+  schedulingController.updateStartDate,
+);
+
+/**
+ * @openapi
+ * /schedulings/{id}/endDate:
+ *   patch:
+ *     tags: [Scheduling]
+ *     summary: Update a scheduling's end date
+ *     description: Requires the Mechanic role. The new end date must be later than the scheduling's start date.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Scheduling MongoDB ID.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [endDate]
+ *             properties:
+ *               endDate:
+ *                 type: string
+ *                 format: date-time
+ *                 example: '2025-01-20T18:00:00.000Z'
+ *     responses:
+ *       '200':
+ *         description: End date updated. Returns the updated scheduling.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Scheduling'
+ *       '400':
+ *         description: End date is not later than the start date.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       '401':
+ *         description: Authentication required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       '403':
+ *         description: Mechanic role required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       '404':
+ *         description: Scheduling not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+schedulingRouter.patch(
+  '/:id/endDate',
+  authenticationMiddleware,
+  authorizeRoleMiddleware('Mecânico'),
+  schedulingController.updateEndDate,
+);
 /**
  * @openapi
  * /schedulings/{id}:
