@@ -90,6 +90,34 @@ export class SchedulingController {
     }
   };
 
+  updateStartDate = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const { startDate } = req.body;
+      const scheduling = await this.schedulingService.updateStartDate(
+        String(id),
+        startDate,
+      );
+      return res.status(200).json(scheduling);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updateEndDate = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const { endDate } = req.body;
+      const scheduling = await this.schedulingService.updateEndDate(
+        String(id),
+        endDate,
+      );
+      return res.status(200).json(scheduling);
+    } catch (error) {
+      next(error);
+    }
+  };
+
   generateReceipt = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
