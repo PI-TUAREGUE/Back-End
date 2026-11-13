@@ -16,11 +16,13 @@ import { InvitationService } from '../invitation/invitation.service';
 
 export interface SchedulingDTO {
   client: string;
+  clientTel: string;
   plate: string;
   car: string;
   startDate: Date;
   endDate?: Date;
   employee: (string | Types.ObjectId)[];
+  editors: (string | Types.ObjectId)[];
   invitedEmployees?: (string | Types.ObjectId)[];
   service: (string | Types.ObjectId)[];
   status: SchedulingStatus;
@@ -28,7 +30,7 @@ export interface SchedulingDTO {
 
 interface ReceiptDTO extends Omit<
   SchedulingDTO,
-  'startDate' | 'employee' | 'invitedEmployees' | 'status'
+  'startDate' | 'employee' | 'invitedEmployees' | 'status' | 'owner' | 'editors'
 > {}
 
 export class SchedulingService {
@@ -40,10 +42,6 @@ export class SchedulingService {
         'A data de término deve ser posterior à data de início.',
         400,
       );
-    }
-
-    if (!data.employee || data.employee.length === 0) {
-      throw new AppError('A lista de mecânicos não pode estar vazia', 400);
     }
 
     if (!data.service || data.service.length === 0) {
@@ -59,6 +57,24 @@ export class SchedulingService {
 
     if (employeeIds.length === 0) {
       throw new AppError('Informe ao menos um mecânico.', 400);
+    }
+
+    const editorIds = [
+      ...new Set([...data.editors.map((id) => id.toString())]),
+    ];
+
+    if (editorIds.length > 0) {
+      const activeEditorsCount = await EmployeeModel.countDocuments({
+        _id: { $in: editorIds },
+        status: EmployeeStatus.ACTIVE,
+      });
+
+      if (activeEditorsCount !== editorIds.length) {
+        throw new AppError(
+          'Um ou mais mecânicos editores não foram encontrados ou estão inativos.',
+          404,
+        );
+      }
     }
 
     const invitedIds = [
@@ -122,7 +138,9 @@ export class SchedulingService {
             {
               ...data,
               employee: employeeIds,
+              owner: senderId,
               service: serviceIds,
+              editors: [senderId, ...editorIds],
             },
           ],
           { session },
@@ -314,6 +332,7 @@ export class SchedulingService {
 
     return {
       client: scheduling.client,
+      clientTel: scheduling.clientTel,
       plate: scheduling.plate,
       car: scheduling.car,
       endDate: scheduling.endDate,

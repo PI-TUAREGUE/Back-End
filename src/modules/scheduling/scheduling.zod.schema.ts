@@ -30,6 +30,8 @@ export const schedulingSchema = z.object({
 
   invitedEmployees: z.array(z.string()).optional(),
 
+  editors: z.array(z.string()).optional(),
+
   service: z.array(
     z.string('Ao meno um serviço deve ser incluído no agendamento.'),
   ),

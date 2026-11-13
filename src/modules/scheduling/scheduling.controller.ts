@@ -10,8 +10,34 @@ export class SchedulingController {
     try {
       const senderId = req.user!.id;
 
+      const {
+        client,
+        clientTel,
+        plate,
+        car,
+        startDate,
+        endDate,
+        employee,
+        editors,
+        invitedEmployees,
+        service,
+        status,
+      } = req.body;
+
       const scheduling = await this.schedulingService.create(
-        req.body,
+        {
+          client,
+          clientTel,
+          plate,
+          car,
+          startDate,
+          endDate,
+          employee,
+          editors,
+          invitedEmployees,
+          service,
+          status,
+        },
         senderId,
       );
       return res.status(201).json(scheduling);
