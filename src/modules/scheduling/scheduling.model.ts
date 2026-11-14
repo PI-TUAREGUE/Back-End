@@ -11,6 +11,8 @@ export interface IScheduling extends Document {
   startDate: Date;
   endDate?: Date;
   employee: Types.ObjectId[];
+  owner: Types.ObjectId;
+  editors: Types.ObjectId[];
   service: Types.ObjectId[];
   status: SchedulingStatus;
 }
@@ -48,7 +50,20 @@ const schedulingSchema = new Schema<IScheduling>(
         'É obrigatório atribuir pelo menos um funcionário.',
       ],
     },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'Employee',
 
+      required: true,
+    },
+    editors: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'Employee',
+        },
+      ],
+    },
     service: {
       type: [
         {

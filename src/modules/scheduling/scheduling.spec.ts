@@ -9,9 +9,21 @@ import { SchedulingModel } from './scheduling.model';
 import { SchedulingStatus } from './scheduling.enum';
 import { SchedulingDTO, SchedulingService } from './scheduling.service';
 
+jest.mock(
+  '../../shared/config/webSocket.ts',
+  () => ({
+    getIO: jest.fn().mockReturnValue({
+      to: jest.fn().mockReturnValue({
+        emit: jest.fn(),
+      }),
+    }),
+  }),
+  { virtual: true },
+);
+
 jest.mock('../invitation/invitation.service', () => ({
   InvitationService: jest.fn().mockImplementation(() => ({
-    create: jest.fn(),
+    create: jest.fn().mockResolvedValue([]),
   })),
 }));
 
@@ -34,17 +46,27 @@ jest.mock('../service/service.model', () => ({
   },
 }));
 
+jest.mock('mongoose', () => ({
+  ...jest.requireActual('mongoose'),
+  startSession: jest.fn().mockResolvedValue({
+    withTransaction: jest.fn().mockImplementation(async (cb) => await cb()),
+    endSession: jest.fn(),
+  }),
+}));
+
 const senderId = 'mechanic-1';
 
 const createSchedulingDTO = (
   overrides: Partial<SchedulingDTO> = {},
 ): SchedulingDTO => ({
   client: 'Cliente',
+  clientTel: '(11) 9 4356-8527',
   plate: 'ABC-1234',
   car: 'Carro',
   startDate: new Date('2026-10-27T10:00:00.000Z'),
   endDate: new Date('2026-10-27T11:00:00.000Z'),
   employee: [senderId],
+  editors: [],
   service: ['service-1'],
   status: SchedulingStatus.SCHEDULED,
   ...overrides,
@@ -59,15 +81,15 @@ const expectAppError = async (
 };
 
 const mockActiveEmployees = (employees: unknown[]): void => {
-  jest.spyOn(EmployeeModel, 'find').mockReturnValue(
-    Promise.resolve(employees) as ReturnType<typeof EmployeeModel.find>,
-  );
+  jest.spyOn(EmployeeModel, 'find').mockResolvedValue(employees as never);
 };
 
 const mockServiceCount = (count: number): void => {
-  jest.spyOn(ServiceModel, 'countDocuments').mockReturnValue(
-    Promise.resolve(count) as ReturnType<typeof ServiceModel.countDocuments>,
-  );
+  jest.spyOn(ServiceModel, 'countDocuments').mockResolvedValue(count as never);
+};
+
+const mockCountDocuments = (count: number): void => {
+  jest.spyOn(EmployeeModel, 'countDocuments').mockResolvedValue(count as never);
 };
 
 describe('SchedulingService.create', () => {
@@ -76,6 +98,21 @@ describe('SchedulingService.create', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.clearAllMocks();
+
+    mockActiveEmployees([{ _id: senderId, status: EmployeeStatus.ACTIVE }]);
+    mockCountDocuments(1);
+    mockServiceCount(1);
+
+    jest.spyOn(SchedulingModel, 'create').mockResolvedValue([
+      {
+        _id: 'scheduling-id-1',
+        ...createSchedulingDTO(),
+        owner: senderId,
+        employee: [senderId],
+        editors: [senderId],
+      } as never,
+    ]);
+
     schedulingService = new SchedulingService(new InvitationService());
   });
 
@@ -87,14 +124,26 @@ describe('SchedulingService.create', () => {
     await expectAppError(schedulingService.create(data, senderId), 400);
   });
 
-  it('lança AppError com status 400 quando a lista de mecânicos está vazia', async () => {
+  it('adiciona o senderId automaticamente quando employee vem vazio', async () => {
     const data = createSchedulingDTO({ employee: [] });
 
-    await expectAppError(schedulingService.create(data, senderId), 400);
+    const result = await schedulingService.create(data, senderId);
+
+    expect(result).toBeDefined();
+    expect(result._id).toBe('scheduling-id-1');
+    expect(SchedulingModel.create).toHaveBeenCalledWith(
+      [
+        expect.objectContaining({
+          employee: [senderId],
+          owner: senderId,
+          editors: [senderId],
+        }),
+      ],
+      expect.any(Object),
+    );
   });
 
   it('lança AppError com status 400 quando a lista de serviços está vazia', async () => {
-    mockActiveEmployees([{ _id: senderId, status: EmployeeStatus.ACTIVE }]);
     mockServiceCount(0);
 
     const data = createSchedulingDTO({ service: [] });
@@ -102,9 +151,16 @@ describe('SchedulingService.create', () => {
     await expectAppError(schedulingService.create(data, senderId), 400);
   });
 
+  it('lança AppError com status 404 quando um mecânico editor está inativo ou não foi encontrado', async () => {
+    mockCountDocuments(0);
+
+    const data = createSchedulingDTO({ editors: ['editor-inativo-1'] });
+
+    await expectAppError(schedulingService.create(data, senderId), 404);
+  });
+
   it('lança AppError com status 404 quando um mecânico está inativo ou não foi encontrado', async () => {
     mockActiveEmployees([]);
-    mockServiceCount(1);
 
     const data = createSchedulingDTO({ employee: ['mechanic-2'] });
 
@@ -112,11 +168,31 @@ describe('SchedulingService.create', () => {
   });
 
   it('lança AppError com status 404 quando um serviço não foi encontrado', async () => {
-    mockActiveEmployees([{ _id: senderId, status: EmployeeStatus.ACTIVE }]);
     mockServiceCount(0);
 
     const data = createSchedulingDTO();
 
     await expectAppError(schedulingService.create(data, senderId), 404);
+  });
+
+  it('deve criar um agendamento com sucesso quando todos os dados forem válidos', async () => {
+    const data = createSchedulingDTO({
+      editors: ['editor-1'],
+    });
+
+    const result = await schedulingService.create(data, senderId);
+
+    expect(result).toBeDefined();
+    expect(result._id).toBe('scheduling-id-1');
+    expect(SchedulingModel.create).toHaveBeenCalledTimes(1);
+    expect(SchedulingModel.create).toHaveBeenCalledWith(
+      [
+        expect.objectContaining({
+          owner: senderId,
+          editors: [senderId, 'editor-1'],
+        }),
+      ],
+      expect.any(Object),
+    );
   });
 });

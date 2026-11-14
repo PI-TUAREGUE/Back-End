@@ -5,6 +5,7 @@ import { SchedulingController } from './scheduling.controller';
 
 import { authenticationMiddleware } from '../../shared/middlewares/authentication.middleware';
 import { authorizeRoleMiddleware } from '../../shared/middlewares/authorize.middleware';
+import { validateEditPermission } from './middlewares/validateEditPermission.middleware';
 
 import { validateBody } from '../../shared/middlewares/validateBody.middleware';
 import { schedulingSchema } from './scheduling.zod.schema';
@@ -168,7 +169,8 @@ schedulingRouter.get(
 schedulingRouter.post(
   '/:schedulingId/services',
   authenticationMiddleware,
-  authorizeRoleMiddleware('Mecânico'),
+  authorizeRoleMiddleware('Mecânico', 'Administrador'),
+  validateEditPermission,
   schedulingController.addService,
 );
 
@@ -229,6 +231,7 @@ schedulingRouter.patch(
   '/:id/status',
   authenticationMiddleware,
   authorizeRoleMiddleware('Mecânico'),
+  validateEditPermission,
   schedulingController.updateStatus,
 );
 
@@ -296,6 +299,7 @@ schedulingRouter.patch(
   '/:id/startDate',
   authenticationMiddleware,
   authorizeRoleMiddleware('Mecânico'),
+  validateEditPermission,
   schedulingController.updateStartDate,
 );
 
@@ -363,6 +367,7 @@ schedulingRouter.patch(
   '/:id/endDate',
   authenticationMiddleware,
   authorizeRoleMiddleware('Mecânico'),
+  validateEditPermission,
   schedulingController.updateEndDate,
 );
 /**
