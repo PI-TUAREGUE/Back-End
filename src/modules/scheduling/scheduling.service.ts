@@ -60,7 +60,7 @@ export class SchedulingService {
     }
 
     const editorIds = [
-      ...new Set([...data.editors.map((id) => id.toString())]),
+      ...new Set([...(data.editors || []).map((id) => id.toString())]),
     ];
 
     if (editorIds.length > 0) {
@@ -200,7 +200,11 @@ export class SchedulingService {
     }
 
     if (filters.startDate) {
-      query.startDate = filters.startDate;
+      const startOfDay = new Date(filters.startDate);
+      startOfDay.setUTCHours(0, 0, 0, 0);
+      const endOfDay = new Date(filters.startDate);
+      endOfDay.setUTCHours(23, 59, 59, 999);
+      query.startDate = { $gte: startOfDay, $lte: endOfDay };
     }
 
     if (filters.client) {
