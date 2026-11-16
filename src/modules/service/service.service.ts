@@ -21,11 +21,14 @@ export class ServiceService {
       throw new AppError('Já existe um serviço com esse nome.', 409);
     }
 
-    return await ServiceModel.create(data);
+    const newService = await ServiceModel.create(data);
+    return await newService.populate('createdBy', 'name');
   }
 
   async findById(id: string): Promise<IService | null> {
-    const service = await ServiceModel.findById(id).exec();
+    const service = await ServiceModel.findById(id)
+      .populate('createdBy', 'name')
+      .exec();
 
     if (!service) {
       throw new AppError('Serviço não encontrado', 404);
@@ -45,7 +48,9 @@ export class ServiceService {
       query.name = { $regex: filters.name, $options: 'i' };
     }
 
-    return await ServiceModel.find(query).exec();
+    return await ServiceModel.find(query)
+      .populate('createdBy', 'name')
+      .exec();
   }
 
   async updateStatus(

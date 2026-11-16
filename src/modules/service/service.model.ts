@@ -1,11 +1,13 @@
-import { model, Schema, Document } from 'mongoose';
+import { model, Schema, Document, Types } from 'mongoose';
 
 import { ServiceStatus } from './status.enum';
 
 export interface IService extends Document {
-  avatarUrl: string;
+  avatarUrl?: string;
   name: string;
   status: ServiceStatus;
+  createdBy?: Types.ObjectId | { _id: Types.ObjectId; name: string };
+  creatorName?: string;
 }
 
 const serviceSchema = new Schema<IService>(
@@ -17,6 +19,15 @@ const serviceSchema = new Schema<IService>(
       enum: Object.values(ServiceStatus),
       default: ServiceStatus.ACTIVE,
       required: true,
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'Employee',
+      required: false,
+    },
+    creatorName: {
+      type: String,
+      required: false,
     },
   },
   {
