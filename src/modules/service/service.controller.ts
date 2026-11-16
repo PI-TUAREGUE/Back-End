@@ -11,13 +11,11 @@ export class ServiceController {
         : undefined;
 
       const createdBy = req.user?.id;
-      const creatorName = req.user?.name;
 
       const service = await this.serviceService.create({
         ...req.body,
         avatarUrl,
         createdBy,
-        creatorName,
       });
 
       return res.status(201).json(service);

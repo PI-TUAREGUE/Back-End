@@ -7,7 +7,6 @@ export interface IService extends Document {
   name: string;
   status: ServiceStatus;
   createdBy?: Types.ObjectId | { _id: Types.ObjectId; name: string };
-  creatorName?: string;
 }
 
 const serviceSchema = new Schema<IService>(
@@ -23,10 +22,6 @@ const serviceSchema = new Schema<IService>(
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'Employee',
-      required: false,
-    },
-    creatorName: {
-      type: String,
       required: false,
     },
   },
