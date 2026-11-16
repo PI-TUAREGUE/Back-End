@@ -8,5 +8,5 @@ export const serviceSchema = z.object({
     .min(3, 'Nome deve ter um mínimo de 3 caracteres.')
     .max(100, 'Nome pode conter um máximo de 100 caracteres.'),
 
-  status: z.enum(['Ativo', 'Inativo']),
+  status: z.enum(['Ativo', 'Inativo']).default('Ativo'),
 });
