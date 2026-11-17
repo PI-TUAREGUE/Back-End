@@ -22,7 +22,7 @@ const serviceSchema = new Schema<IService>(
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'Employee',
-      required: false,
+      required: true,
     },
   },
   {
