@@ -98,6 +98,28 @@ describe('AuthService.login', () => {
     expect(jwt.sign).not.toHaveBeenCalled();
   });
 
+  it('lança AppError com status 403 quando a conta está inativa', async () => {
+    const inactiveEmployee = {
+      ...employee,
+      status: EmployeeStatus.INACTIVE,
+    };
+    mockEmployeeLookup(inactiveEmployee as IEmployee);
+    mockCompare.mockResolvedValue(true);
+
+    await expect(authService.login(email, password)).rejects.toThrow(AppError);
+    await expect(authService.login(email, password)).rejects.toHaveProperty(
+      'statusCode',
+      403,
+    );
+    await expect(authService.login(email, password)).rejects.toHaveProperty(
+      'message',
+      'Conta inativa. Acesso não permitido.',
+    );
+
+    expect(bcrypt.compare).toHaveBeenCalledWith(password, employee.password);
+    expect(jwt.sign).not.toHaveBeenCalled();
+  });
+
   it('autentica credenciais válidas e retorna o token assinado com os dados do usuário', async () => {
     const token = 'signed-jwt-token';
     mockEmployeeLookup(employee as IEmployee);
