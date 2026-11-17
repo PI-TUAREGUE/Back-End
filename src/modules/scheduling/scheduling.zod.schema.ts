@@ -42,5 +42,5 @@ export const schedulingSchema = z.object({
     'Concluído',
     'Cancelado',
     'Em progresso',
-  ]),
+  ]).default('Agendado'),
 });

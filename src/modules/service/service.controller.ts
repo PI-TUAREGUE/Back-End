@@ -10,9 +10,12 @@ export class ServiceController {
         ? req.file.path.replace(/\\/g, '/')
         : undefined;
 
+      const createdBy = req.user?.id;
+
       const service = await this.serviceService.create({
         ...req.body,
         avatarUrl,
+        createdBy,
       });
 
       return res.status(201).json(service);
