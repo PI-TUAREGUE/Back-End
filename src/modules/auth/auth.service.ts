@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 
 import { IToken } from './token.interface';
 import { EmployeeModel } from '../employee/employee.model';
+import { EmployeeStatus } from '../employee/status.enum';
 
 import { transporter } from '../../shared/config/nodemailer';
 
@@ -20,6 +21,10 @@ export class AuthService {
     const matchPassword = await bcrypt.compare(password, employee!.password);
     if (!matchPassword) {
       throw new AppError('Email ou senha incorretos', 401);
+    }
+
+    if (employee.status === EmployeeStatus.INACTIVE) {
+      throw new AppError('Conta inativa. Acesso não permitido.', 403);
     }
 
     const payload = {
