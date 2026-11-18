@@ -151,4 +151,27 @@ export class EmployeeService {
 
     return updatedEmployee;
   }
+
+  async updateAvatar(id: string, avatarUrl: string): Promise<IEmployee | null> {
+    const employee = await EmployeeModel.findById(id).exec();
+
+    if (!employee) {
+      throw new AppError('Usuário não encontrado.', 404);
+    }
+
+    const updatedEmployee = await EmployeeModel.findByIdAndUpdate(
+      id,
+      { $set: { avatarUrl: avatarUrl } },
+      {
+        new: true,
+        runValidators: true,
+      },
+    ).exec();
+
+    if (!updatedEmployee) {
+      throw new AppError('Usuário não encontrado.', 404);
+    }
+
+    return updatedEmployee;
+  }
 }
