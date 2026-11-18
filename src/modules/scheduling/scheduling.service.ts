@@ -28,7 +28,7 @@ export interface SchedulingDTO {
   status: SchedulingStatus;
 }
 
-interface ReceiptDTO extends Omit<
+export interface ReceiptDTO extends Omit<
   SchedulingDTO,
   'startDate' | 'employee' | 'invitedEmployees' | 'status' | 'owner' | 'editors'
 > {}
