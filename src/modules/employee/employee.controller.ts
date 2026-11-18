@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { EmployeeService } from './employee.service';
+import { EmployeeRole } from './roles.enum';
+import { AppError } from '../../shared/errors/AppError';
 
 export class EmployeeController {
   constructor(private employeeService: EmployeeService) {}
@@ -78,6 +80,37 @@ export class EmployeeController {
       const employee = await this.employeeService.updateStatus(
         String(id),
         status,
+      );
+      return res.status(200).json(employee);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updateAvatar = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const avatarUrl = req.file
+        ? req.file.path.replace(/\\/g, '/')
+        : undefined;
+
+      if (!avatarUrl) {
+        throw new AppError('Nenhum arquivo de imagem foi enviado.', 400);
+      }
+
+      if (
+        req.user?.id !== id &&
+        !req.user?.roles?.includes(EmployeeRole.ADMIN)
+      ) {
+        throw new AppError(
+          'Você não tem permissão para alterar a foto deste usuário.',
+          403,
+        );
+      }
+
+      const employee = await this.employeeService.updateAvatar(
+        String(id),
+        avatarUrl,
       );
       return res.status(200).json(employee);
     } catch (error) {

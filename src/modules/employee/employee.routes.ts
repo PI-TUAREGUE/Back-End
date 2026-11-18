@@ -283,6 +283,13 @@ employeeRouter.patch(
   authorizeRoleMiddleware('Administrador'),
   employeeController.updateStatus,
 );
+
+employeeRouter.patch(
+  '/:id/avatar',
+  authenticationMiddleware,
+  uploadMiddleware,
+  employeeController.updateAvatar,
+);
 /**
  * @openapi
  * /employees/{id}:
