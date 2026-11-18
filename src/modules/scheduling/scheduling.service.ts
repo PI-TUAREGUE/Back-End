@@ -182,7 +182,7 @@ export class SchedulingService {
 
   async findById(id: string): Promise<IScheduling | null> {
     const scheduling = await SchedulingModel.findById(id)
-      .populate('employee', 'name')
+      .populate('employee', 'name avatarUrl')
       .populate('service', 'name');
 
     if (!scheduling) {
@@ -220,7 +220,7 @@ export class SchedulingService {
     }
 
     return await SchedulingModel.find(query)
-      .populate('employee', 'name')
+      .populate('employee', 'name avatarUrl')
       .populate('service', 'name');
   }
 
