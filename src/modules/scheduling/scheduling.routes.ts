@@ -69,7 +69,7 @@ const schedulingController = new SchedulingController(schedulingService);
 schedulingRouter.post(
   '/',
   authenticationMiddleware,
-  authorizeRoleMiddleware('Mecânico'),
+  authorizeRoleMiddleware('Mecânico', 'Administrador'),
   validateBody(schedulingSchema),
   schedulingController.create,
 );
@@ -230,7 +230,7 @@ schedulingRouter.post(
 schedulingRouter.patch(
   '/:id/status',
   authenticationMiddleware,
-  authorizeRoleMiddleware('Mecânico'),
+  authorizeRoleMiddleware('Mecânico', 'Administrador'),
   validateEditPermission,
   schedulingController.updateStatus,
 );
@@ -298,7 +298,7 @@ schedulingRouter.patch(
 schedulingRouter.patch(
   '/:id/startDate',
   authenticationMiddleware,
-  authorizeRoleMiddleware('Mecânico'),
+  authorizeRoleMiddleware('Mecânico', 'Administrador'),
   validateEditPermission,
   schedulingController.updateStartDate,
 );
@@ -366,7 +366,7 @@ schedulingRouter.patch(
 schedulingRouter.patch(
   '/:id/endDate',
   authenticationMiddleware,
-  authorizeRoleMiddleware('Mecânico'),
+  authorizeRoleMiddleware('Mecânico', 'Administrador'),
   validateEditPermission,
   schedulingController.updateEndDate,
 );
