@@ -11,6 +11,7 @@ import { EmployeeModel } from '../employee/employee.model';
 import { EmployeeStatus } from '../employee/status.enum';
 
 import { ServiceModel } from '../service/service.model';
+import { ServiceStatus } from '../service/status.enum';
 
 import { InvitationService } from '../invitation/invitation.service';
 
@@ -110,7 +111,10 @@ export class SchedulingService {
         _id: { $in: employeeIds },
         status: EmployeeStatus.ACTIVE,
       }),
-      ServiceModel.countDocuments({ _id: { $in: serviceIds } }),
+      ServiceModel.countDocuments({
+        _id: { $in: serviceIds },
+        status: ServiceStatus.ACTIVE,
+      }),
     ]);
 
     if (employees.length !== employeeIds.length) {
@@ -122,7 +126,7 @@ export class SchedulingService {
 
     if (serviceCount !== serviceIds.length) {
       throw new AppError(
-        'Um ou mais serviços informados não foram encontrados.',
+        'Um ou mais serviços informados não foram encontrados ou estão inativos.',
         404,
       );
     }
