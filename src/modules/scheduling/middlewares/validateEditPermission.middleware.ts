@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { SchedulingModel } from '../scheduling.model';
 import { AppError } from '../../../shared/errors/AppError';
+import { EmployeeRole } from '../../employee/roles.enum';
 
 export const validateEditPermission = async (
   req: Request,
@@ -8,7 +9,7 @@ export const validateEditPermission = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const schedulingId = req.params.schedulingId;
+    const schedulingId = req.params.schedulingId || req.params.id;
     const userId = req.user?.id;
 
     if (!schedulingId || !userId) {
@@ -21,11 +22,13 @@ export const validateEditPermission = async (
       throw new AppError('Agendamento não encontrado.', 404);
     }
 
+    const isAdmin = req.user?.roles?.includes(EmployeeRole.ADMIN);
+    const isOwner = scheduling.owner?.toString() === userId.toString();
     const isEditor = scheduling.editors.some(
       (editorId) => editorId.toString() === userId.toString(),
     );
 
-    if (!isEditor) {
+    if (!isAdmin && !isOwner && !isEditor) {
       throw new AppError(
         'Você não tem permissão para editar este agendamento',
         403,
