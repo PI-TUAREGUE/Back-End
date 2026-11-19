@@ -167,7 +167,7 @@ describe('SchedulingService.create', () => {
     await expectAppError(schedulingService.create(data, senderId), 404);
   });
 
-  it('lança AppError com status 404 quando um serviço não foi encontrado', async () => {
+  it('lança AppError com status 404 quando um serviço não foi encontrado ou está inativo', async () => {
     mockServiceCount(0);
 
     const data = createSchedulingDTO();
