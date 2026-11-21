@@ -29,3 +29,13 @@ jobs:
 
       - name: Rodar Testes Unitários
         run: npm run test
+
+  deploy:
+    name: Deploy Render
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Disparar Deploy Hook do Render
+        run: curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
