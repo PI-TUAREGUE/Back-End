@@ -38,4 +38,4 @@ jobs:
 
     steps:
       - name: Disparar Deploy Hook do Render
-        run: curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+        run: curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
