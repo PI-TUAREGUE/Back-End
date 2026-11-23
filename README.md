@@ -57,6 +57,16 @@ O projeto está totalmente "dockerizado", o que facilita a execução do ambient
 
 O Swagger estará disponível em http://localhost:3000/api-docs.
 
+### Usuário de teste
+
+Em um banco de desenvolvimento, execute `npm run seed:test-user` para criar ou atualizar o usuário de teste. O comando usa a variável `MONGO_URI` do arquivo `.env` e não pode ser executado com `NODE_ENV=production`.
+
+- E-mail: `teste@tuaregue.com`
+- Senha: `Teste123!`
+- Cargos: Administrador e Mecânico
+
+Faça login pela rota de autenticação para obter um token e use-o como `Bearer` ao chamar `POST /employees`. O seed redefine a senha do usuário de teste a cada execução; não use essas credenciais em produção.
+
 Segurança e Roles
 
 O acesso é controlado por permissões granulares:

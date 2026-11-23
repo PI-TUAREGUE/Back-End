@@ -18,7 +18,8 @@
     "build": "tsc",
     "start": "node dist/server.ts",
     "dev": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules src/server.ts",
-    "test": "jest --config src/shared/config/jest.config.js"
+    "test": "jest --config src/shared/config/jest.config.js",
+    "seed:test-user": "tsx src/scripts/seed-test-user.ts"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
