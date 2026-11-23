@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { expand } from 'dotenv-expand';
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 
@@ -6,7 +7,8 @@ import { EmployeeModel } from '../modules/employee/employee.model';
 import { EmployeeRole } from '../modules/employee/roles.enum';
 import { EmployeeStatus } from '../modules/employee/status.enum';
 
-dotenv.config();
+const env = dotenv.config();
+expand(env);
 
 const testUser = {
   name: 'Usuário de Teste',
