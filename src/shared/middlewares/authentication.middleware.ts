@@ -33,6 +33,12 @@ export const authenticationMiddleware = (
     req.user = decoded;
     next();
   } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      throw new AppError('Sessão expirada. Faça login novamente.', 401);
+    }
+    if (error instanceof jwt.JsonWebTokenError) {
+      throw new AppError('Token inválido. Faça login novamente.', 401);
+    }
     next(error);
   }
 };
